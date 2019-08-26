@@ -32,8 +32,6 @@ print("Init finished")
 print("Reading image")
 
 img = skio.imread(path_to_img)
-img_input = cv.imread(path_to_img, cv.IMREAD_COLOR)
-img_output = img_input.copy()
 
 print("detecting stuff")
 results = detector.detect(img)

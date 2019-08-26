@@ -103,6 +103,12 @@ class MaskrcnnObjectDetector:
         plt.show()
 
     def center_of_mass(self, mask):
+        # given by the formula 1/sum * Sigma (coordiante * coordinate_weight)
+        # where
+        #   sum is the sum of all weights
+        #   coordinate is the coordinate vector for a given pixle
+        #   coordinate_weight is the value of the pixle (0 = false, 1 = true)
+
         ints = mask.astype(int)
         total_sum = ints.sum()
 
