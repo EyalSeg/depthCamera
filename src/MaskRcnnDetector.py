@@ -10,7 +10,7 @@ import math
 import importlib.util
 
 class MaskrcnnObjectDetector:
-    def __init__(self, pathToMrcnn, pathToCoco, pathToWeights, modelDir):
+    def __init__(self, pathToMrcnn, pathToCoco, pathToWeights, modelDir, class_names = None):
         sys.path.append(pathToMrcnn)
         from mrcnn import utils
         import mrcnn.model as modellib
@@ -66,14 +66,34 @@ class MaskrcnnObjectDetector:
     #           to get the mask of the object i: masks[:, :, i]
     #       class_ids[i] is the id of the object class, matching self.class_names
     #       scores[i] is how certain the detection is
-    def detect(self, image, verbose = 1):
+    def detect(self, image, desired_classes = None, verbose = 1):
         results = self.model.detect([image], verbose= verbose)
 
-        r = results[0]
+        r = self.filter_results(results[0], desired_classes)
         r["count"] = r["rois"].shape[0]
         r["coordinates"] = [self.center_of_mass(r["masks"][:, :, i])
                             for i in range(r["count"])]
         return r
+
+    def filter_results(self, results, desired_classes = None):
+        if desired_classes is None:
+            return results
+
+        detected_classes = [self.class_names[id] for id in results['class_ids']]
+        indices = list(filter(
+            lambda i: detected_classes[i] in desired_classes,
+            range(len(detected_classes))))
+
+        # filter by the indices above
+        results["rois"] = results["rois"][indices]
+        results["class_ids"] = results["class_ids"][indices]
+        results["scores"] = results['scores'][indices]
+
+        results["masks"] = results["masks"][:, :, indices]
+
+        return results
+
+
 
     def display(self, image, results):
 

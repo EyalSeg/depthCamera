@@ -15,6 +15,8 @@ import numpy as np
 
 path_to_img = '/home/eyal/PycharmProjects/depthCamera/Mask_RCNN-master/images/4782628554_668bc31826_z.jpg'
 
+#name the types of objects you'd like to detect. None for all known objects in the network
+desired_classes = ['sheep']
 
 from pathlib import Path
 path_to_maskrcnn = Path(__file__).parent.parent.parent.joinpath("Mask_RCNN-master")
@@ -25,7 +27,7 @@ print("Initializing MaskRCNN detector...")
 detector = Detector(str(path_to_maskrcnn),
                     str(path_to_maskrcnn.joinpath('samples/coco')),
                     str(path_to_maskrcnn.joinpath('samples/mask_rcnn_coco.h5')),
-                    str(path_to_maskrcnn.joinpath('logs')),
+                    str(path_to_maskrcnn.joinpath('logs'))
                         )
 
 print("Init finished")
@@ -34,7 +36,7 @@ print("Reading image")
 img = skio.imread(path_to_img)
 
 print("detecting stuff")
-results = detector.detect(img)
+results = detector.detect(img, desired_classes=desired_classes)
 print(results)
 
 print("\n\n")
