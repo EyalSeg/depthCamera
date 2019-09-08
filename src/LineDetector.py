@@ -3,7 +3,9 @@
 import numpy as np
 import math
 from scipy import optimize
+import sys
 
+loss_magic_num = 2
 
 # find the position in the line to join.
 # x y z are arrays of datapoints in the line, where x is width, y is height and z is depth
@@ -13,26 +15,12 @@ from scipy import optimize
 # next_position is the desired position.
 # angle is the angle between the desired position and the last position.
 # the line_polynomial is the interpolation polynomial representing the line
-def find_line_position(x, y, z, distance = 1):
-
-    #interpolation_polynomial_degree =  math.floor((len(x) - 1) * 2 / 3)
-    #interpolation_polynomial_degree = (len(x) - 1)
-    interpolation_polynomial_degree = 2
-
+def find_line_position(x, y, z, distance = 1, max_degree = 3):
     # assume the datapoints are on a straight plane, so we can ignore the y array
     last_position = np.array([x[-1], z[-1]])
     weights = generate_weights(x)
 
-    # copy the last point and move to the right
-    # so that the interpolation polynomial will approach infinity slower
-#    x_new = x.copy()
-#    z_new = z.copy()
-#    interpolation_polynomial_degree += 1
-#    x_new.append(last_position[0] + distance)
-#    z_new.append(last_position[1])
-
-    # TODO: Add weights so that the last datapoints are worth more
-    line_polynomial = np.polynomial.polynomial.Polynomial.fit(x, z, interpolation_polynomial_degree, w= weights)
+    line_polynomial = curve_fit(x, z, max_degree, weights= weights)
 
     next_position = find_next_position(line_polynomial, last_position, distance)
     angle = angle_between(next_position, last_position)
@@ -45,8 +33,33 @@ def find_line_position(x, y, z, distance = 1):
 # meaning that the y axis here on is usually the z axis in 3d space (since we assume the datapoints are on a flat plane,
 #  height is meaningless)
 
+def curve_fit(x, y, max_degree, weights = None):
+    # test different degrees
+
+    best_loss = sys.maxsize
+    best_curve = None
+
+    for degree in range(1, max_degree + 1):
+        curve, [resid, rank, sv, rcond] = \
+            np.polynomial.polynomial.Polynomial.fit(x, y, degree, w=weights, full=True)
+
+        loss = resid * (loss_magic_num ** degree) # punishes higher-order polynomials
+
+        if loss < best_loss:
+            best_loss = loss
+            best_curve = curve
+
+    return best_curve
+
+
 def generate_weights(data):
-    return [(x / (len(data) + 1)) for x in range(1, len(data) + 1)]
+    # dimish the weight of a point the further away it is from the line's ending
+    weights = [1 / i for i in reversed(range(1, len(data) + 1))]
+
+    # "encourage" the line to pass through the last point
+    weights[-1] = len(data)
+
+    return weights
 
 # find a position [x, y] on the given polynomial so that [x, y] is distance away from the given position
 def find_next_position(polynomial, position, distance):
