@@ -66,6 +66,7 @@ class MaskrcnnObjectDetector:
     #           to get the mask of the object i: masks[:, :, i]
     #       class_ids[i] is the id of the object class, matching self.class_names
     #       scores[i] is how certain the detection is
+    #       coordinates are (x, y) points representing the center of an object's mass
     def detect(self, image, desired_classes = None, verbose = 1):
         results = self.model.detect([image], verbose= verbose)
 
