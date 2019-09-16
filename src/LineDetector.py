@@ -5,7 +5,7 @@ import math
 from scipy import optimize
 import sys
 
-loss_magic_num = 2
+loss_magic_num = 4
 
 # find the position in the line to join.
 # x y z are arrays of datapoints in the line, where x is width, y is height and z is depth
@@ -73,7 +73,7 @@ def find_next_position(polynomial, position, distance):
     # a root of this function is distance away from the given position
     desired_distance_func = lambda a : norm_func(a) - distance
 
-    result_x = optimize.bisect(desired_distance_func, position[0] - 0.1, position[0] + distance * 2)
+    result_x = optimize.bisect(desired_distance_func, position[0] - 0.01, position[0] + distance * 2)
     #result_x = optimize.newton(desired_distance_func, position[0])
     return [result_x, polynomial(result_x)]
 
