@@ -36,15 +36,3 @@ for line_sample in line_samples:
     poly = result["line_polynomial"]
     new_pos = result["next_pos"]
 
-    # plot line
-    poly_x = np.linspace(x[0] - 0.1, x[-1] + distance, 100)
-    poly_y = poly(poly_x)
-    plt.plot(poly_x, poly_y)
-
-    #plot the new pos
-    plt.plot(*new_pos, "ro")
-    plt.annotate('new position', xy=new_pos, xytext=(new_pos[0], new_pos[1] + 0.5),
-                 arrowprops=dict(facecolor='black', shrink=0.05),
-                 )
-
-    plt.show()
