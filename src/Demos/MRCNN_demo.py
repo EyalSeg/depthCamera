@@ -13,10 +13,11 @@ import cv2 as cv
 
 import numpy as np
 
-path_to_img = '/home/eyal/PycharmProjects/depthCamera/Mask_RCNN-master/images/4782628554_668bc31826_z.jpg'
+#path_to_img = '/home/eyal/PycharmProjects/depthCamera/Mask_RCNN-master/images/4782628554_668bc31826_z.jpg'
+path_to_img = '/home/eyal/Pictures/line_simulation.png'
 
 #name the types of objects you'd like to detect. None for all known objects in the network
-desired_classes = ['sheep']
+desired_classes = ['person']
 
 from pathlib import Path
 path_to_maskrcnn = Path(__file__).parent.parent.parent.joinpath("Mask_RCNN-master")

@@ -72,8 +72,7 @@ class MaskrcnnObjectDetector:
 
         r = self.filter_results(results[0], desired_classes)
         r["count"] = r["rois"].shape[0]
-        r["coordinates"] = [self.center_of_mass(r["masks"][:, :, i])
-                            for i in range(r["count"])]
+
         return r
 
     def filter_results(self, results, desired_classes = None):
@@ -97,6 +96,8 @@ class MaskrcnnObjectDetector:
 
 
     def display(self, image, results):
+        coordinates = [self.center_of_mass(results["masks"][:, :, i])
+                            for i in range(results["count"])]
 
         skimage.io.imshow(image)
 
@@ -117,7 +118,7 @@ class MaskrcnnObjectDetector:
         ax.axis('off')
         ax.imshow(image)
         for i in range(results["count"]):
-            circle = plt.Circle(results["coordinates"][i], 5, color="blue")
+            circle = plt.Circle(coordinates[i], 5, color="blue")
             ax.add_artist(circle)
 
 

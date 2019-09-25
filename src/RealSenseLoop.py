@@ -45,9 +45,7 @@ class CameraFrame:
 
     def get_object_position(self, mask):
         points = self.mask_to_points(mask)
-        points = self.normalize_points(points, coordinate_index=0)
-        points = self.normalize_points(points, coordinate_index=1)
-        points = self.normalize_points(points, coordinate_index=2)
+        points = self.normalize_points(points)
 
         x = np.mean(points[:, 0])
         y = np.mean(points[:, 1])
@@ -58,8 +56,14 @@ class CameraFrame:
         return point
 
 
-    def normalize_points(self, points, coordinate_index=2, m=1.8):
+    def normalize_points(self, points, m=1.8):
+        points = self.normalize_points_by_coordinate(points, 0)
+        points = self.normalize_points_by_coordinate(points, 1)
+        points = self.normalize_points_by_coordinate(points, 2)
 
+        return points
+
+    def normalize_points_by_coordinate(self, points, coordinate_index, m=1.8):
         mean = np.mean(points[:,coordinate_index])
         sd = np.std(points[:,coordinate_index])
 
