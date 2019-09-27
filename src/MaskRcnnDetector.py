@@ -76,7 +76,7 @@ class MaskrcnnObjectDetector:
         return r
 
     def filter_results(self, results, desired_classes = None):
-        if desired_classes is None:
+        if desired_classes is None or len(desired_classes) == 0:
             return results
 
         detected_classes = [self.class_names[id] for id in results['class_ids']]
